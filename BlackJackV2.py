@@ -18,7 +18,8 @@ quitting = False
 global dealerWins
 global playerWins
 global balance
-balance = 25
+global double
+balance = 25.0
 dealerWins = 0
 playerWins = 0
 def Game():
@@ -26,6 +27,7 @@ def Game():
     i = True
     while i == True:
         BlackJack = False
+        double = False
         global balance
         dealerCard = 0
         playerCard = 2
@@ -113,27 +115,30 @@ def Game():
             balance += price
             break
 
-        if handDealer[0][0] == "A":
-            choice = input("Do you want to insure? (YES|NO): ")
-            if choice.lower() == "yes":
-                print("Okay insuring...")
-            elif choice.lower() == "no":
-                print("Whatever u want")        
-
         while worthPlayer <= 21:
-            choice = input("hit or stand?: ")
+            if playerCard == 2 and balance - bet >= 0:
+                choice = input("hit, stand or double?: ")
+                if choice.lower() == "double":
+                    double = True
+                    balance -= bet
+                    choice = "hit"
+                    bet *= 2
+            else: 
+                choice = input("hit or stand?: ")
             if choice.lower() == "hit":
                 card = random.sample(DECK, 1)
                 handPlayer = list(itertools.chain(handPlayer ,card))
                 worthPlayer = worthPlayer + worth[handPlayer[playerCard][0]]
                 playerCard += 1
                 swap = Acer(handPlayer, worthPlayer)
-                print(swap)
                 if isinstance(swap, int):
                     suit = handPlayer[swap][1]
                     handPlayer[swap] = 'ace' + suit
                     worthPlayer = worthPlayer - 10
                 print("Player: ", handPlayer, worthPlayer)
+
+            if double:
+                break
 
             if choice.lower() == "stand":
                 break
